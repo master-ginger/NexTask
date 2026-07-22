@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,8 @@ export default function SignupPage() {
     role: "member",
   });
 
+  const router = useRouter();
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -19,11 +22,40 @@ export default function SignupPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log(formData);
-  };
+  try {
+    const response = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        role:
+          formData.role === "manager"
+            ? "MANAGER"
+            : "MEMBER",
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      return;
+    }
+
+    router.push("/login");  
+
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong.");
+  }
+};
 
   return (
     <main className="h-screen  flex p-5 justify-center ">
@@ -98,7 +130,7 @@ export default function SignupPage() {
               value={formData.fullName}
               onChange={handleChange}
               placeholder="John Doe"
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+              className="w-full rounded-xl border text-black border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
             />
           </div>
 
@@ -113,7 +145,7 @@ export default function SignupPage() {
               value={formData.email}
               onChange={handleChange}
               placeholder="john@email.com"
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+              className="w-full rounded-xl border text-black border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
             />
           </div>
 
@@ -131,7 +163,7 @@ export default function SignupPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+              className="w-full rounded-xl border text-black border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
             />
           </div>
 
@@ -145,7 +177,7 @@ export default function SignupPage() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+              className="w-full rounded-xl border text-black border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
             />
           </div>
 

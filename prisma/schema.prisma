@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id String @id @default(cuid())
+  fullName String
+  email String @unique
+  password String
+  role Role
+
+  department  String?
+  designation String?
+
+  tasks Task[]
+  projectUsers  ProjectMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id          String @id @default(cuid())
+  title       String
+  description String
+  status      String
+  priority    String
+  deadline    DateTime
+  projectId   String
+  project     Project @relation(fields:[projectId],references:[id])
+  assigneeId  String
+  assignee    User @relation(fields: [assigneeId], references: [id])
+}
+
+model Project{
+  id String @id @default(cuid())
+  name String
+  startDate DateTime
+  deadline DateTime
+
+  tasks Task[]
+  projectUsers ProjectMember[]
+}
+
+model ProjectMember {
+  id         String   @id @default(cuid())
+
+  projectId  String
+  project    Project @relation(fields: [projectId], references: [id])
+
+  userId     String
+  user       User @relation(fields: [userId], references: [id])
+
+  assignedAt DateTime @default(now())
+
+  @@unique([projectId, userId])
+}
+
+enum Role{
+  MANAGER
+  MEMBER
+  ADMIN
+}

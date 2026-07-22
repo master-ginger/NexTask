@@ -1,24 +1,30 @@
+"use client";
+
+import { useState } from "react";
+import { useEffect } from "react";
+
 export default function MembersPage() {
-  const members = [
-    {
-      name: "John Doe",
-      team: "Frontend",
-      tasks: 8,
-      status: "Active",
-    },
-    {
-      name: "Sarah",
-      team: "Backend",
-      tasks: 5,
-      status: "Active",
-    },
-    {
-      name: "Alex",
-      team: "QA",
-      tasks: 4,
-      status: "On Leave",
-    },
-  ];
+  const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchMembers = async () => {
+    try {
+      const res = await fetch("/api/members");
+      const data = await res.json();
+
+      if (data.success) {
+        setMembers(data.members);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
   return (
     <div>
@@ -46,9 +52,9 @@ export default function MembersPage() {
             <tr>
 
               <th className="text-left p-5">Name</th>
+              <th className="text-left p-5">Email</th>
               <th className="text-left p-5">Team</th>
               <th className="text-left p-5">Tasks</th>
-              <th className="text-left p-5">Status</th>
 
             </tr>
 
@@ -59,11 +65,12 @@ export default function MembersPage() {
             {members.map((member) => (
 
               <tr
-                key={member.name}
+                key={member.id}
                 className="border-t"
               >
 
-                <td className="p-5">{member.name}</td>
+                <td className="p-5">{member.fullName}</td>
+                <td className="p-5">{member.email}</td>
                 <td className="p-5">{member.team}</td>
                 <td className="p-5">{member.tasks}</td>
 

@@ -16,9 +16,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        <button className="rounded-xl bg-black px-5 py-3 text-white hover:bg-zinc-800 transition">
-          + New Project
-        </button>
+    
 
       </div>
 

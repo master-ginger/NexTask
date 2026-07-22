@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -16,10 +17,37 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const router = useRouter();
 
-    console.log(formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("form data: ",formData)
+
+    try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      return;
+    }
+
+    router.push("/dashboard");  
+
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong.");
+  }
   };
 
   return (
@@ -91,7 +119,7 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@email.com"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+                className="w-full rounded-xl border text-black border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
               />
             </div>
 
@@ -115,7 +143,7 @@ export default function LoginPage() {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="********"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
+                className="w-full text-black rounded-xl border border-slate-300 px-4 py-3 focus:ring-2 focus:ring-gray-500 outline-none"
               />
             </div>
 
