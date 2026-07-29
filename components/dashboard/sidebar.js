@@ -15,6 +15,11 @@ const menuItems = [
     icon: "📁",
   },
   {
+    name: "Tasks",
+    href: "/tasks",
+    icon: "📁",
+  },
+  {
     name: "Members",
     href: "/members",
     icon: "👥",

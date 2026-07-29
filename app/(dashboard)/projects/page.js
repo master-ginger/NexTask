@@ -7,15 +7,32 @@ export default function ProjectsPage() {
 
   useEffect(() => {
     fetchProjects();
+    fetchMembers();
   }, []);
 
   const [showModal, setShowModal] = useState(false);
+
+  const [members, setMembers] = useState([]);
 
   const [projectData, setProjectData] = useState({
     name: "",
     startDate: "",
     deadline: "",
+    members: [],
   });
+
+  const fetchMembers = async () => {
+    try {
+      const res = await fetch("/api/members");
+      const data = await res.json();
+
+      if (data.success) {
+        setMembers(data.members);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchProjects = async () => {
     try {
@@ -55,12 +72,35 @@ export default function ProjectsPage() {
         name: "",
         startDate: "",
         deadline: "",
+        members: [],
       });
 
       fetchProjects();
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleMemberSelection = (userId) => {
+
+    if (projectData.members.includes(userId)) {
+
+      setProjectData({
+        ...projectData,
+        members: projectData.members.filter(
+          (id) => id !== userId
+        ),
+      });
+
+    } else {
+
+      setProjectData({
+        ...projectData,
+        members: [...projectData.members, userId],
+      });
+
+    }
+
   };
 
   return (
@@ -153,6 +193,49 @@ export default function ProjectsPage() {
                 })
               }
             />
+
+            <div className="mb-6">
+
+              <label className="block font-semibold mb-3">
+                Assign Members
+              </label>
+
+              <div className="max-h-52 overflow-y-auto border rounded-xl p-3">
+
+                {members.map((member) => (
+
+                  <label
+                    key={member.id}
+                    className="flex items-center gap-3 py-2 cursor-pointer"
+                  >
+
+                    <input
+                      type="checkbox"
+                      checked={projectData.members.includes(member.id)}
+                      onChange={() =>
+                        handleMemberSelection(member.id)
+                      }
+                    />
+
+                    <div>
+
+                      <p className="font-medium">
+                        {member.fullName}
+                      </p>
+
+                      <p className="text-sm text-slate-500">
+                        {member.email}
+                      </p>
+
+                    </div>
+
+                  </label>
+
+                ))}
+
+              </div>
+
+            </div>
 
             <div className="flex justify-end gap-3">
               <button

@@ -7,6 +7,14 @@ export async function GET() {
       orderBy: {
         startDate: "desc",
       },
+      include:{
+           _count: {
+            select: {
+              tasks: true,
+              projectUsers: true,
+            },
+          },
+        }
     });
 
     return NextResponse.json({
@@ -33,6 +41,24 @@ export async function POST(request) {
         name: body.name,
         startDate: new Date(body.startDate),
         deadline: new Date(body.deadline),
+
+        projectUsers: {
+          create: body.members.map((userId) => ({
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
+          })),
+        },
+      },
+
+      include: {
+        projectUsers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
