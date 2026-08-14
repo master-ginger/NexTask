@@ -5,7 +5,7 @@ export default function TasksPage() {
     const [tasks, setTasks] = useState([]);
     const [projects, setProjects] = useState([]);
 
-    const [selectedProject, setSelectedProject] = useState("all");
+    const [selectedProject, setSelectedProject] = useState("");
 
     const [showModal, setShowModal] = useState(false);
 
@@ -19,6 +19,7 @@ export default function TasksPage() {
     priority: "Medium",
     status: "Todo",
     deadline: "",
+    taskType:"TASK"
     });
 
     const [isEditing, setIsEditing] = useState(false);
@@ -101,11 +102,12 @@ export default function TasksPage() {
         setTaskData({
         title: "",
         description: "",
-        projectId: "",
+        projectId: selectedProject !== "all" ? selectedProject : "",
         assigneeId: "",
         priority: "Medium",
         status: "Todo",
         deadline: "",
+        taskType: "TASK",
         });
 
         setMembers([]);
@@ -132,6 +134,7 @@ export default function TasksPage() {
     priority: task.priority,
     status: task.status,
     deadline: task.deadline.substring(0, 10),
+    taskType: task.taskType
   });
 
   setShowModal(true);
@@ -140,7 +143,7 @@ export default function TasksPage() {
 const updateTask = async () => {
 
   try {
-
+    console.log("task Id: ",editingTaskId)
     const res = await fetch(`/api/tasks/${editingTaskId}`, {
       method: "PUT",
       headers: {
@@ -216,11 +219,14 @@ const deleteTask = async (taskId) => {
 
     useEffect(() => {
         fetchProjects();
-        fetchTasks();
+        // fetchTasks();
     }, []);
 
     useEffect(() => {
-        fetchTasks(selectedProject);
+       if (selectedProject) {
+            fetchTasks(selectedProject);
+            fetchMembers(selectedProject);
+        }
     }, [selectedProject]);
 
   return (
@@ -248,9 +254,9 @@ const deleteTask = async (taskId) => {
             }
             className="border rounded-xl px-4 py-3"
           >
-            <option value="all">
-              All Projects
-            </option>
+            <option value="">
+                    Select Project
+                </option>
             {projects.map((project) => (
 
                 <option
@@ -484,7 +490,7 @@ const deleteTask = async (taskId) => {
                 ))}
                 </select>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
 
                 <select className="border rounded-xl px-4 py-3"
                     value={taskData.priority}
@@ -498,7 +504,21 @@ const deleteTask = async (taskId) => {
                   <option>Medium</option>
                   <option>High</option>
                 </select>
-
+                 <select
+                  value={taskData.taskType}
+                  onChange={(e) =>
+                    setTaskData({
+                      ...taskData,
+                      taskType: e.target.value,
+                    })
+                  }
+                  className="border rounded-xl px-4 py-3"
+                >
+                  <option value="TASK">Task</option>
+                  <option value="FEATURE">Feature</option>
+                  <option value="BUG">Bug</option>
+                  <option value="IMPROVEMENT">Improvement</option>
+                </select>
                 <select 
                     className="border rounded-xl px-4 py-3"
                     value={taskData.status}

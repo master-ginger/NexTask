@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const menuItems = [
   {
@@ -20,14 +21,9 @@ const menuItems = [
     icon: "📁",
   },
   {
-    name: "Members",
-    href: "/members",
-    icon: "👥",
-  },
-  {
-    name: "Calendar",
-    href: "/calendar",
-    icon: "📅",
+    name: "Productivity Analysis",
+    href: "/productivity",
+    icon: "📊",
   },
   {
     name: "Settings",
@@ -38,6 +34,16 @@ const menuItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <aside className="w-72 bg-black text-white flex flex-col">
@@ -66,6 +72,7 @@ export default function Sidebar() {
 
             return (
               <li key={item.name}>
+
                 <Link
                   href={item.href}
                   className={`flex items-center gap-4 rounded-xl px-5 py-3 transition ${
@@ -74,12 +81,15 @@ export default function Sidebar() {
                       : "text-zinc-300 hover:bg-zinc-900"
                   }`}
                 >
+
                   <span className="text-lg">
                     {item.icon}
                   </span>
 
                   {item.name}
+
                 </Link>
+
               </li>
             );
           })}
@@ -88,29 +98,31 @@ export default function Sidebar() {
 
       </nav>
 
-      {/* User */}
+      {/* Logged in User */}
 
       <div className="border-t border-zinc-800 p-6">
 
-        <div className="flex items-center gap-4">
+        {user && (
+          <div className="flex items-center gap-4">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black font-bold">
-            B
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-black font-bold">
+              {user.fullName?.charAt(0).toUpperCase()}
+            </div>
+
+            <div className="min-w-0">
+
+              <h3 className="font-medium truncate">
+                {user.fullName}
+              </h3>
+
+              <p className="text-sm text-zinc-400">
+                {user.role}
+              </p>
+
+            </div>
+
           </div>
-
-          <div>
-
-            <h3 className="font-medium">
-              Bhavana
-            </h3>
-
-            <p className="text-sm text-zinc-400">
-              Project Manager
-            </p>
-
-          </div>
-
-        </div>
+        )}
 
       </div>
 

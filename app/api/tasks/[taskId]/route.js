@@ -2,12 +2,19 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(request, { params }) {
+    
   try {
+
     const body = await request.json();
 
+    const { taskId } = await params;
+    const completedAt = body.status === 'Completed' ? new Date() : null;
+    console.log("Task ID:", taskId);
+    console.log("Assignee ID:", body.assigneeId);
+    console.log("Project ID:", body.projectId);
     const updatedTask = await prisma.task.update({
       where: {
-        id: params.taskId,
+        id: taskId,
       },
       data: {
         title: body.title,
@@ -15,8 +22,10 @@ export async function PUT(request, { params }) {
         priority: body.priority,
         status: body.status,
         deadline: new Date(body.deadline),
+        taskType:body.taskType,
         projectId: body.projectId,
         assigneeId: body.assigneeId,
+        completedAt:completedAt
       },
       include: {
         project: true,
@@ -42,9 +51,11 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+
+    const { taskId } = await params;
     await prisma.task.delete({
       where: {
-        id: params.taskId,
+        id: taskId,
       },
     });
 

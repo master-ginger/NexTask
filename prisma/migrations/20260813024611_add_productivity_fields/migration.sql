@@ -1,0 +1,6 @@
+-- CreateEnum
+CREATE TYPE "TaskType" AS ENUM ('FEATURE', 'BUG', 'IMPROVEMENT', 'TASK');
+
+-- AlterTable
+ALTER TABLE "Task" ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "taskType" "TaskType";

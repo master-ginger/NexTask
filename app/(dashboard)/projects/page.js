@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ProjectsPage() {
+  const router = useRouter();
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
@@ -103,6 +105,17 @@ export default function ProjectsPage() {
 
   };
 
+//   const totalTasks = project._count.tasks;
+
+// const completedTasks = project.tasks.filter(
+//   (task) => task.status === "Completed"
+// ).length;
+
+// const progress =
+//   totalTasks === 0
+//     ? 0
+//     : Math.round((completedTasks / totalTasks) * 100);
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -120,35 +133,40 @@ export default function ProjectsPage() {
 
       <div className="grid gap-6">
         {projects.map((project) => (
-          <div
-            key={project.id}
-            className="bg-white rounded-2xl p-6 shadow border"
-          >
-            <div className="flex justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">
-                  {project.name}
-                </h2>
+  <div
+    key={project.id}
+    onClick={() => router.push(`/projects/${project.id}`)}
+    className="bg-white rounded-2xl p-6 shadow border cursor-pointer hover:shadow-lg transition"
+  >
+    <div className="flex justify-between">
+      <div>
+        <h2 className="text-xl font-semibold">
+          {project.name}
+        </h2>
 
-                <p className="text-slate-500">
-                  Deadline:{" "}
-                  {new Date(project.deadline).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
+        <p className="text-slate-500">
+          Deadline:{" "}
+          {new Date(project.deadline).toLocaleDateString()}
+        </p>
+      </div>
 
-            <div className="mt-5 h-2 bg-gray-200 rounded-full">
-              <div
-                className="h-2 bg-black rounded-full"
-                style={{ width: "0%" }}
-              />
-            </div>
+      <span className="text-slate-400">
+        →
+      </span>
+    </div>
 
-            <p className="mt-2 text-sm text-slate-500">
-              Progress will be calculated later
-            </p>
-          </div>
-        ))}
+    <div className="mt-5 h-2 bg-gray-200 rounded-full">
+      <div
+        className="h-2 bg-black rounded-full"
+        style={{ width: "0%" }}
+      />
+    </div>
+
+    <p className="mt-2 text-sm text-slate-500">
+      Progress will be calculated later
+    </p>
+  </div>
+))}
       </div>
 
       {showModal && (

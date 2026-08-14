@@ -37,9 +37,7 @@ export default function MembersPage() {
           </p>
         </div>
 
-        <button className="bg-black text-white px-5 py-3 rounded-xl hover:bg-zinc-800">
-          + Add Member
-        </button>
+        
 
       </div>
 
@@ -53,8 +51,7 @@ export default function MembersPage() {
 
               <th className="text-left p-5">Name</th>
               <th className="text-left p-5">Email</th>
-              <th className="text-left p-5">Team</th>
-              <th className="text-left p-5">Tasks</th>
+              
 
             </tr>
 
@@ -71,22 +68,9 @@ export default function MembersPage() {
 
                 <td className="p-5">{member.fullName}</td>
                 <td className="p-5">{member.email}</td>
-                <td className="p-5">{member.team}</td>
-                <td className="p-5">{member.tasks}</td>
+                
 
-                <td className="p-5">
-
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm ${
-                      member.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-200 text-gray-600"
-                    }`}
-                  >
-                    {member.status}
-                  </span>
-
-                </td>
+                
 
               </tr>
 

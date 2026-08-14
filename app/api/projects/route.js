@@ -14,6 +14,12 @@ export async function GET() {
               projectUsers: true,
             },
           },
+          tasks:{
+            select:{
+              id:true,
+              status:true
+            }
+          }
         }
     });
 

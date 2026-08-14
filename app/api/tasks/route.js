@@ -20,7 +20,7 @@ export async function GET(request) {
       },
 
       orderBy: {
-        deadline: "asc",
+        createdAt: "desc",
       },
     });
 
@@ -58,6 +58,8 @@ export async function POST(request) {
         status: body.status,
         priority: body.priority,
         deadline: new Date(body.deadline),
+
+        taskType: body.taskType || "TASK",
 
         projectId: body.projectId,
         assigneeId: body.assigneeId,
