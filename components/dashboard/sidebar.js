@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const menuItems = [
+const managerMenuItems = [
   {
     name: "Dashboard",
     href: "/dashboard",
@@ -32,6 +32,24 @@ const menuItems = [
   },
 ];
 
+const memberMenuItems = [
+  {
+    name: "Dashboard",
+    href: "/member-dashboard",
+    icon: "🏠",
+  },
+  {
+    name: "My Tasks",
+    href: "/my-tasks",
+    icon: "✓",
+  },
+  {
+    name: "Settings",
+    href: "/settings",
+    icon: "⚙️",
+  },
+]
+
 export default function Sidebar() {
   const pathname = usePathname();
 
@@ -44,7 +62,15 @@ export default function Sidebar() {
       setUser(JSON.parse(storedUser));
     }
   }, []);
+  if (!user) {
+    return null;
+  }
 
+  const menuItems =
+    user.role === "MEMBER"
+      ? memberMenuItems
+      : managerMenuItems;
+  
   return (
     <aside className="w-72 bg-black text-white flex flex-col">
 

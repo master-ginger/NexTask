@@ -44,7 +44,13 @@ export default function LoginPage() {
 
     localStorage.setItem("user", JSON.stringify(data.user));
 
-    router.push("/dashboard");  
+    if (data.user.role === "MANAGER") {
+      router.push("/dashboard");
+    } else if (data.user.role === "MEMBER") {
+      router.push("/member-dashboard");
+    } else if (data.user.role === "ADMIN") {
+      router.push("/dashboard");
+    }
 
   } catch (error) {
     console.error(error);
