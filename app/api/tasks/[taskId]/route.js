@@ -2,31 +2,106 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export async function PUT(request, { params }) {
-    
   try {
-
+    const { taskId } = await params;
     const body = await request.json();
 
-    const { taskId } = await params;
-    const completedAt = body.status === 'Completed' ? new Date() : null;
-    console.log("Task ID:", taskId);
-    console.log("Assignee ID:", body.assigneeId);
-    console.log("Project ID:", body.projectId);
+    // Find the existing task first
+    const existingTask = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!existingTask) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Task not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    // Object containing only fields that need to be updated
+    const updateData = {};
+
+    // Add fields only if they are provided
+    if (body.title !== undefined) {
+      updateData.title = body.title;
+    }
+
+    if (body.description !== undefined) {
+      updateData.description = body.description;
+    }
+
+    if (body.priority !== undefined) {
+      updateData.priority = body.priority;
+    }
+
+    if (body.status !== undefined) {
+      updateData.status = body.status;
+    }
+
+    if (body.deadline !== undefined) {
+      const deadline = new Date(body.deadline);
+
+      if (Number.isNaN(deadline.getTime())) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Invalid deadline",
+          },
+          { status: 400 }
+        );
+      }
+
+      updateData.deadline = deadline;
+    }
+
+    if (body.projectId !== undefined) {
+      updateData.projectId = body.projectId;
+    }
+
+    if (body.assigneeId !== undefined) {
+      updateData.assigneeId = body.assigneeId;
+    }
+
+    if (body.taskType !== undefined) {
+      updateData.taskType = body.taskType;
+    }
+
+    // -----------------------------------------
+    // Handle completedAt
+    // -----------------------------------------
+
+    if (body.status !== undefined) {
+      // Task has just been completed
+      if (
+        body.status === "Completed" &&
+        existingTask.status !== "Completed"
+      ) {
+        updateData.completedAt = new Date();
+      }
+
+      // Task was reopened / moved out of Completed
+      else if (
+        body.status !== "Completed" &&
+        existingTask.status === "Completed"
+      ) {
+        updateData.completedAt = null;
+      }
+    }
+
+    // -----------------------------------------
+    // Update task
+    // -----------------------------------------
+
     const updatedTask = await prisma.task.update({
       where: {
         id: taskId,
       },
-      data: {
-        title: body.title,
-        description: body.description,
-        priority: body.priority,
-        status: body.status,
-        deadline: new Date(body.deadline),
-        taskType:body.taskType,
-        projectId: body.projectId,
-        assigneeId: body.assigneeId,
-        completedAt:completedAt
-      },
+      data: updateData,
       include: {
         project: true,
         assignee: true,
@@ -39,6 +114,8 @@ export async function PUT(request, { params }) {
       task: updatedTask,
     });
   } catch (error) {
+    console.error("Update task error:", error);
+
     return NextResponse.json(
       {
         success: false,
@@ -51,8 +128,24 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-
     const { taskId } = await params;
+
+    const existingTask = await prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+    });
+
+    if (!existingTask) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Task not found",
+        },
+        { status: 404 }
+      );
+    }
+
     await prisma.task.delete({
       where: {
         id: taskId,
@@ -64,6 +157,8 @@ export async function DELETE(request, { params }) {
       message: "Task deleted successfully",
     });
   } catch (error) {
+    console.error("Delete task error:", error);
+
     return NextResponse.json(
       {
         success: false,

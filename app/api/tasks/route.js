@@ -6,21 +6,37 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
 
     const projectId = searchParams.get("projectId");
+    const assigneeId = searchParams.get("assigneeId");
+
+    const where = {};
+
+    if (projectId) {
+      where.projectId = projectId;
+    }
+
+    if (assigneeId) {
+      where.assigneeId = assigneeId;
+    }
 
     const tasks = await prisma.task.findMany({
-      where: projectId
-        ? {
-            projectId,
-          }
-        : {},
-
-      include: {
-        project: true,
-        assignee: true,
-      },
-
+      where,
       orderBy: {
-        createdAt: "desc",
+        deadline: "asc",
+      },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignee: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true,
+          },
+        },
       },
     });
 
@@ -28,19 +44,16 @@ export async function GET(request) {
       success: true,
       tasks,
     });
-
   } catch (error) {
+    console.error("Get tasks error:", error);
 
     return NextResponse.json(
       {
         success: false,
         message: error.message,
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
-
   }
 }
 

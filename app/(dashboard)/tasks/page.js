@@ -65,6 +65,8 @@ export default function TasksPage() {
             url += `?projectId=${projectId}`;
             }
 
+            
+
             const res = await fetch(url);
             const data = await res.json();
 
@@ -121,101 +123,101 @@ export default function TasksPage() {
 
     const editTask = async (task) => {
 
-  setIsEditing(true);
-  setEditingTaskId(task.id);
+      setIsEditing(true);
+      setEditingTaskId(task.id);
 
-  await fetchMembers(task.projectId);
+      await fetchMembers(task.projectId);
 
-  setTaskData({
-    title: task.title,
-    description: task.description,
-    projectId: task.projectId,
-    assigneeId: task.assigneeId,
-    priority: task.priority,
-    status: task.status,
-    deadline: task.deadline.substring(0, 10),
-    taskType: task.taskType
-  });
+      setTaskData({
+        title: task.title,
+        description: task.description,
+        projectId: task.projectId,
+        assigneeId: task.assigneeId,
+        priority: task.priority,
+        status: task.status,
+        deadline: task.deadline.substring(0, 10),
+        taskType: task.taskType
+      });
 
-  setShowModal(true);
-};
+        setShowModal(true);
+      };
 
-const updateTask = async () => {
+    const updateTask = async () => {
 
-  try {
-    console.log("task Id: ",editingTaskId)
-    const res = await fetch(`/api/tasks/${editingTaskId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(taskData),
-    });
+      try {
+        console.log("task Id: ",editingTaskId)
+        const res = await fetch(`/api/tasks/${editingTaskId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(taskData),
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if (!data.success) {
-      alert(data.message);
-      return;
-    }
+        if (!data.success) {
+          alert(data.message);
+          return;
+        }
 
-    alert("Task updated successfully!");
+        alert("Task updated successfully!");
 
-    setShowModal(false);
+        setShowModal(false);
 
-    setIsEditing(false);
-    setEditingTaskId(null);
+        setIsEditing(false);
+        setEditingTaskId(null);
 
-    setTaskData({
-      title: "",
-      description: "",
-      projectId: "",
-      assigneeId: "",
-      priority: "Medium",
-      status: "Todo",
-      deadline: "",
-    });
+        setTaskData({
+          title: "",
+          description: "",
+          projectId: "",
+          assigneeId: "",
+          priority: "Medium",
+          status: "Todo",
+          deadline: "",
+        });
 
-    setMembers([]);
+        setMembers([]);
 
-    fetchTasks(selectedProject);
+        fetchTasks(selectedProject);
 
-  } catch (error) {
-    console.error(error);
-  }
+      } catch (error) {
+        console.error(error);
+      }
 
-};
+    };
 
-const deleteTask = async (taskId) => {
+    const deleteTask = async (taskId) => {
 
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this task?"
-  );
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this task?"
+      );
 
-  if (!confirmDelete) return;
+      if (!confirmDelete) return;
 
-  try {
+      try {
 
-    const res = await fetch(`/api/tasks/${taskId}`, {
-      method: "DELETE",
-    });
+        const res = await fetch(`/api/tasks/${taskId}`, {
+          method: "DELETE",
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
-    if (!data.success) {
-      alert(data.message);
-      return;
-    }
+        if (!data.success) {
+          alert(data.message);
+          return;
+        }
 
-    alert("Task deleted successfully!");
+        alert("Task deleted successfully!");
 
-    fetchTasks(selectedProject);
+        fetchTasks(selectedProject);
 
-  } catch (error) {
-    console.error(error);
-  }
+      } catch (error) {
+        console.error(error);
+      }
 
-};  
+    };  
 
     useEffect(() => {
         fetchProjects();
