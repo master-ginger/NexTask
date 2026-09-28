@@ -7,25 +7,42 @@ export async function GET() {
       orderBy: {
         startDate: "desc",
       },
-      include:{
-           _count: {
-            select: {
-              tasks: true,
-              projectUsers: true,
-            },
+      include: {
+        _count: {
+          select: {
+            tasks: true,
+            projectUsers: true,
           },
-          tasks:{
-            select:{
-              id:true,
-              status:true
-            }
-          }
-        }
+        },
+        tasks: {
+          select: {
+            status: true,
+          },
+        },
+      },
+    });
+
+    const projectsWithProgress = projects.map((project) => {
+      const totalTasks = project._count.tasks;
+
+      const completedTasks = project.tasks.filter(
+        (task) => task.status === "Completed"
+      ).length;
+
+      const progress =
+        totalTasks === 0
+          ? 0
+          : Math.round((completedTasks / totalTasks) * 100);
+
+      return {
+        ...project,
+        progress,
+      };
     });
 
     return NextResponse.json({
       success: true,
-      projects,
+      projects: projectsWithProgress,
     });
   } catch (error) {
     return NextResponse.json(

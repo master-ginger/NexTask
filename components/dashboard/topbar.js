@@ -23,18 +23,12 @@ export default function Topbar() {
   };
 
   return (
-    <header className="flex h-20 items-center justify-between border-b border-gray-200 bg-white px-8">
+    <header className="flex h-14 items-center justify-between border-b border-gray-200 bg-white px-8">
 
       {/* Left */}
 
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">
-          Dashboard
-        </h2>
-
-        <p className="text-sm text-slate-500">
-          Manage your projects efficiently
-        </p>
+        
       </div>
 
       {/* Right */}
